@@ -99,17 +99,15 @@ class Pokemon
 end
 
 class Pikachu < Pokemon
-  def initialize(name=self.class.name, cry = "Pika pika pika!")
+  def initialize(name = self.class.name, cry = "Pika pika pika!")
     self.set(45, 1.2, 30, cry, name)
     self.add_attack Attack.new(:tail_whip, 0, 0, 0, -1, 30)
     self.add_attack Attack.new(:thunder, 40, 0, 0, 0, 30)
   end
-  
-  # add_attack_to_class Attack.new(:crap, 1, 1, 1, 1, 30)
 end
 
 class Bulbasaur < Pokemon
-  def initialize(name=self.class.name, cry = "Bulba bulba!")
+  def initialize(name = self.class.name, cry = "Bulba bulba!")
     self.set(45, 1.2, 30, cry, name)
     self.add_attack Attack.new(:tackle, 35, 0, 0, 0, 35)
     self.add_attack Attack.new(:berserk, 80, 10, -20, 0, 5)
