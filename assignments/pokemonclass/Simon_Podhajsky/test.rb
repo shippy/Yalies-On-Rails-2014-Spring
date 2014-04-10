@@ -2,11 +2,12 @@ require './pokemon'
 require 'minitest/autorun'
 
 class PokemonClassData < MiniTest::Unit::TestCase
-def setup
-  @pok = Pokemon.new
-  @pik = Pikachu.new
-  @bul = Bulbasaur.new
-end
+  def setup
+    @pok = Pokemon.new
+    @pik = Pikachu.new
+    @bul = Bulbasaur.new
+  end
+  
   def test_hasDefaultName
     assert_equal('Missingno', Pokemon.new.name)
   end
@@ -14,8 +15,7 @@ end
   def test_inheritedName
     refute_equal(@pik.name, "Missingno")
     assert_equal(@pik.name, "Pikachu")
-    
-    @bul = Bulbasaur.new
+ 
     refute_equal(@bul.name, "Missingno")
     assert_equal(@bul.name, "Bulbasaur")
   end
@@ -100,10 +100,10 @@ end
   
   def test_movesDepletePowerPoints
     # first returns the hash pair as array of two elt's
-    att = @pik.power_points.first.first
-    pp = @pik.power_points.first.last
-    @pik.send(att, @bul)
-    assert_equal(pp - 1, @pik.power_points[att])
+    att = @pik.moves.first
+    pp = att.pp
+    @pik.send(att.name, @bul)
+    assert_equal(pp - 1, @pik.moves.first.pp)
   end
   
   def test_movesFailAfterPPDepletion

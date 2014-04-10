@@ -22,7 +22,7 @@ end
 
 class Pokemon
   attr_accessor :name, :max_health, :current_health, :attack, :defense
-  attr_reader :cry, :power_points
+  attr_reader :cry, :moves
   
   def initialize(max_health = 30, attack = 1, defense = 20, cry = "For the Dark Lord!", name = "Missingno")
     @name = name
@@ -39,7 +39,7 @@ class Pokemon
     @attack = attack
     @defense = defense
     
-    @power_points = Hash.new
+    @moves = []
     
     puts @cry
   end
@@ -70,12 +70,13 @@ class Pokemon
   end
   
   def add_attack(attack)
-    @power_points[attack.name] = attack.pp
+    @moves << attack
     
     define_singleton_method attack.name do |target|
+      index = @moves.find_index(attack)
       if self.current_health <= 0
         puts "A fainted Pokemon cannot attack!"
-      elsif (@power_points[attack.name] > 0)
+      elsif (@moves[index].pp > 0)
         puts "Attack #{attack.name} deployed by #{@name}!"
         
         # Effects on opponent
@@ -89,7 +90,7 @@ class Pokemon
         self.full_heal if attack.full_heal
         
         # Attack depletion
-        @power_points[attack.name] -= 1
+        @moves[index].pp -= 1
       else
         puts "Attack #{attack.name} depleted!"
       end
