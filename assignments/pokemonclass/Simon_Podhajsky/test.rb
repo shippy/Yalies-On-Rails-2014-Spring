@@ -9,7 +9,7 @@ class PokemonClassData < MiniTest::Unit::TestCase
   end
   
   def test_hasDefaultName
-    assert_equal('Missingno', Pokemon.new.name)
+    assert_equal('Missingno', @pok.name)
   end
   
   def test_inheritedName
@@ -21,9 +21,14 @@ class PokemonClassData < MiniTest::Unit::TestCase
   end
   
   def test_currentHealthIsMaxHealth
+    # In default case
     assert_equal(@pok.max_health, @pok.current_health)
+    
+    # In custom setup
     pak = Pokemon.new(10)
     assert_equal(pak.max_health, pak.current_health)
+    
+    # In case custom setup is out of bounds
     pik = Pokemon.new(1000)
     assert_equal(pik.max_health, pik.current_health)
   end
@@ -31,8 +36,11 @@ class PokemonClassData < MiniTest::Unit::TestCase
   def test_cannotAssignMaxHealthOutsideBounds
     pok = Pokemon.new(1)
     assert_equal(10, pok.max_health)
+    refute_equal(1, pok.max_health)
     pak = Pokemon.new(1000)
     assert_equal(999, pak.max_health)
+    refute_equal(1000, pok.max_health)
+    # NB: The actual comparison values are implementation dependent
   end
 
   
@@ -99,7 +107,6 @@ class PokemonClassData < MiniTest::Unit::TestCase
   end
   
   def test_movesDepletePowerPoints
-    # first returns the hash pair as array of two elt's
     att = @pik.moves.first
     pp = att.pp
     @pik.send(att.name, @bul)
@@ -109,7 +116,9 @@ class PokemonClassData < MiniTest::Unit::TestCase
   def test_movesFailAfterPPDepletion
     30.times {@pik.thunder @bul}
     @bul.full_heal
+    # Error message triggered
     assert_output("Attack thunder depleted!\n") { @pik.thunder @bul }
+    # Other pokemon no longer hurt by attempted attack
     assert_equal(@bul.max_health, @bul.current_health)
   end
   
@@ -119,7 +128,9 @@ class PokemonClassData < MiniTest::Unit::TestCase
   
   def test_faintedPokemonsCannotAttack
     @pik.damage 1000
+    # Error message triggered
     assert_output("A fainted Pokemon cannot attack!\n") { @pik.thunder @bul }
+    # Other pokemon no longer hurt by attempted attack
     assert_equal(@bul.max_health, @bul.current_health)
   end
 end
