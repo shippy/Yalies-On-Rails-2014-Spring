@@ -45,8 +45,10 @@ class PokemonClassData < MiniTest::Unit::TestCase
 
   
   def test_damageInvolvesDefense
+    @pok.defense = 10
+    @pok.current_health = 40
     @pok.damage 30
-    assert_equal(@pok.current_health, @pok.max_health - (30 - @pok.defense))
+    assert_equal(20, @pok.current_health)
   end
   
   def test_negativeDamageFails
@@ -75,12 +77,15 @@ class PokemonClassData < MiniTest::Unit::TestCase
   end
   
   def test_tailWhip
-    assert_equal(30, @bul.defense)
+    @bul.defense = 30
     @pik.tail_whip @bul
     assert_operator(30, :>, @bul.defense)
+    assert_equal(29, @bul.defense)
   end
   
   def test_thunder
+    # FIXME: Make attributes explicit so that the math is done here, instead of
+    # replicating the logic of
     @pik.thunder @bul
     assert_equal(@bul.current_health, @bul.max_health - (@pik.attack * 40 - @bul.defense))
   end
@@ -91,31 +96,37 @@ class PokemonClassData < MiniTest::Unit::TestCase
   end
   
   def test_berserk
+    # Hurts opponent by 80, self by 10, and decreases self-defense by 20.
     @pik.set(100) # Maximum health
-    assert_equal(@bul.defense, 30)
+    @bul.defense = 30
+    
     @bul.berserk @pik
+    
     assert_equal(@bul.defense, 10)
     assert_equal(@pik.current_health, @pik.max_health - (@bul.attack * 80 - @pik.defense))
     assert_equal(@bul.current_health, @bul.max_health - (@bul.attack * 10 - @bul.defense))
   end
   
   def test_pokemonsDontShareMoves
-    assert_raises(NoMethodError) {Pikachu.new.tackle Bulbasaur.new}
-    assert_raises(NoMethodError) {Pikachu.new.berserk Bulbasaur.new}
-    assert_raises(NoMethodError) {Bulbasaur.new.tail_whip Pikachu.new}
-    assert_raises(NoMethodError) {Bulbasaur.new.thunder Pikachu.new}
+    assert_raises(NoMethodError) { Pikachu.new.tackle Bulbasaur.new }
+    assert_raises(NoMethodError) { Pikachu.new.berserk Bulbasaur.new }
+    assert_raises(NoMethodError) { Bulbasaur.new.tail_whip Pikachu.new }
+    assert_raises(NoMethodError) { Bulbasaur.new.thunder Pikachu.new }
   end
   
   def test_movesDepletePowerPoints
     att = @pik.moves.first
     pp = att.pp
+    
     @pik.send(att.name, @bul)
+    
     assert_equal(pp - 1, @pik.moves.first.pp)
   end
   
   def test_movesFailAfterPPDepletion
     30.times {@pik.thunder @bul}
     @bul.full_heal
+    
     # Error message triggered
     assert_output("Attack thunder depleted!\n") { @pik.thunder @bul }
     # Other pokemon no longer hurt by attempted attack
