@@ -13,6 +13,8 @@ class Attack
     @pp = pp
     @pp_max = pp
     @full_heal = full_heal
+    
+    # TODO: allow a code block to be passed for passive evaluation, later
   end
   
   def restore_pp
